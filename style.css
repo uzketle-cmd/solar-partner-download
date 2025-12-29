@@ -678,6 +678,7 @@ h3 {
     background: var(--primary-dark);
 }
 
+/* QR Code Styles */
 .qr-section {
     text-align: center;
     margin-bottom: 2rem;
@@ -690,6 +691,53 @@ h3 {
     border: 10px solid var(--white);
     border-radius: 10px;
     box-shadow: var(--shadow);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.qr-code img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Fallback styles if QR code fails */
+.qr-fallback {
+    padding: 20px;
+    text-align: center;
+}
+
+.qr-fallback i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.qr-fallback p {
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+}
+
+.qr-fallback small {
+    font-size: 0.8rem;
+    color: var(--gray);
+    word-break: break-all;
+}
+
+/* QR code loading animation */
+@keyframes qrPulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+.qr-code.loading {
+    animation: qrPulse 1.5s infinite;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
 }
 
 .btn-download {
