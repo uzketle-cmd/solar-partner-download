@@ -101,7 +101,7 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 // Observe elements for animation
-document.querySelectorAll('.feature-card, .step, .support-card').forEach(el => {
+document.querySelectorAll('.feature-card, .step, .support-card, .carousel-container').forEach(el => {
     observer.observe(el);
 });
 
@@ -136,8 +136,11 @@ function updateDownloadCount() {
 // Update count every hour
 setInterval(updateDownloadCount, 3600000);
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize carousel
+    initCarousel();
+    
     // Close mobile menu when clicking outside
     document.addEventListener('click', (e) => {
         if (mobileMenu.classList.contains('active') && 
@@ -162,70 +165,74 @@ document.addEventListener('DOMContentLoaded', () => {
             closeMobileMenu();
         }
     });
+});
 
-    // Carousel functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const carouselTrack = document.querySelector('.carousel-track');
-        const slides = document.querySelectorAll('.carousel-slide');
-        const dots = document.querySelectorAll('.dot');
-        const prevBtn = document.querySelector('.carousel-nav.prev');
-        const nextBtn = document.querySelector('.carousel-nav.next');
-        const currentStepSpan = document.querySelector('.current-step');
-        const totalStepsSpan = document.querySelector('.total-steps');
-        
-        let currentStep = 1;
-        const totalSteps = 5;
-        
-        // Set total steps
-        totalStepsSpan.textContent = totalSteps;
-        
-        // Initialize carousel
-        updateCarousel();
-        
-        // Dot navigation
-        dots.forEach(dot => {
-            dot.addEventListener('click', function() {
-                const step = parseInt(this.dataset.step);
-                if (step !== currentStep) {
-                    currentStep = step;
-                    updateCarousel();
-                }
-            });
+// Carousel functionality
+function initCarousel() {
+    const carouselTrack = document.querySelector('.carousel-track');
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.querySelector('.carousel-nav.prev');
+    const nextBtn = document.querySelector('.carousel-nav.next');
+    const currentStepSpan = document.querySelector('.current-step');
+    const totalStepsSpan = document.querySelector('.total-steps');
+    
+    if (!carouselTrack || slides.length === 0) return; // Exit if carousel doesn't exist
+    
+    let currentStep = 1;
+    const totalSteps = slides.length;
+    
+    // Set total steps
+    totalStepsSpan.textContent = totalSteps;
+    
+    // Initialize carousel
+    updateCarousel();
+    
+    // Dot navigation
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            const step = parseInt(this.dataset.step);
+            if (step !== currentStep) {
+                currentStep = step;
+                updateCarousel();
+            }
         });
-        
-        // Previous button
-        prevBtn.addEventListener('click', function() {
+    });
+    
+    // Previous button
+    prevBtn.addEventListener('click', function() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateCarousel();
+        }
+    });
+    
+    // Next button
+    nextBtn.addEventListener('click', function() {
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateCarousel();
+        }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
             if (currentStep > 1) {
                 currentStep--;
                 updateCarousel();
             }
-        });
-        
-        // Next button
-        nextBtn.addEventListener('click', function() {
+        } else if (e.key === 'ArrowRight') {
             if (currentStep < totalSteps) {
                 currentStep++;
                 updateCarousel();
             }
-        });
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') {
-                if (currentStep > 1) {
-                    currentStep--;
-                    updateCarousel();
-                }
-            } else if (e.key === 'ArrowRight') {
-                if (currentStep < totalSteps) {
-                    currentStep++;
-                    updateCarousel();
-                }
-            }
-        });
-        
-        // Mouse wheel navigation
-        let isScrolling = false;
+        }
+    });
+    
+    // Mouse wheel navigation
+    let isScrolling = false;
+    if (carouselTrack) {
         carouselTrack.addEventListener('wheel', function(e) {
             if (isScrolling) return;
             
@@ -247,13 +254,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             setTimeout(() => {
                 isScrolling = false;
-            }, 800); // Match transition duration
+            }, 800);
         });
-        
-        // Touch swipe for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
+    }
+    
+    // Touch swipe for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    if (carouselTrack) {
         carouselTrack.addEventListener('touchstart', function(e) {
             touchStartX = e.changedTouches[0].screenX;
         });
@@ -262,252 +271,233 @@ document.addEventListener('DOMContentLoaded', () => {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         });
+    }
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
         
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe left - next
-                if (currentStep < totalSteps) {
-                    currentStep++;
-                    updateCarousel();
-                }
-            } else if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe right - previous
-                if (currentStep > 1) {
-                    currentStep--;
-                    updateCarousel();
-                }
+        if (touchEndX < touchStartX - swipeThreshold) {
+            // Swipe left - next
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateCarousel();
+            }
+        } else if (touchEndX > touchStartX + swipeThreshold) {
+            // Swipe right - previous
+            if (currentStep > 1) {
+                currentStep--;
+                updateCarousel();
             }
         }
-        
-        // Auto-rotate (optional)
-        let autoRotateInterval;
-        function startAutoRotate() {
-            autoRotateInterval = setInterval(() => {
-                if (currentStep < totalSteps) {
-                    currentStep++;
-                } else {
-                    currentStep = 1;
-                }
-                updateCarousel();
-            }, 5000); // Rotate every 5 seconds
-        }
-        
-        function stopAutoRotate() {
+    }
+    
+    // Auto-rotate (optional)
+    let autoRotateInterval;
+    function startAutoRotate() {
+        autoRotateInterval = setInterval(() => {
+            if (currentStep < totalSteps) {
+                currentStep++;
+            } else {
+                currentStep = 1;
+            }
+            updateCarousel();
+        }, 5000);
+    }
+    
+    function stopAutoRotate() {
+        if (autoRotateInterval) {
             clearInterval(autoRotateInterval);
         }
-        
-        // Pause auto-rotate on hover
+    }
+    
+    // Pause auto-rotate on hover
+    if (carouselTrack) {
         carouselTrack.addEventListener('mouseenter', stopAutoRotate);
         carouselTrack.addEventListener('mouseleave', startAutoRotate);
-        
-        // Start auto-rotate
-        startAutoRotate();
-        
-        // Update carousel function
-        function updateCarousel() {
-            // Update active class on slides
-            slides.forEach(slide => {
-                slide.classList.remove('active');
-                const step = parseInt(slide.dataset.step);
-                
-                if (step === currentStep) {
-                    slide.classList.add('active');
-                }
-            });
+    }
+    
+    // Start auto-rotate
+    startAutoRotate();
+    
+    // Update carousel function
+    function updateCarousel() {
+        // Update active class on slides
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+            const step = parseInt(slide.dataset.step);
             
-            // Update dots
-            dots.forEach(dot => {
-                dot.classList.remove('active');
-                const step = parseInt(dot.dataset.step);
-                
-                if (step === currentStep) {
-                    dot.classList.add('active');
-                }
-            });
-            
-            // Update current step indicator
-            currentStepSpan.textContent = currentStep;
-            
-            // Update button states
-            prevBtn.disabled = currentStep === 1;
-            nextBtn.disabled = currentStep === totalSteps;
-            
-            // Add animation class for transition
-            slides.forEach(slide => {
-                slide.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            });
-            
-            // Update slide positions based on current step
-            updateSlidePositions();
-        }
-        
-        function updateSlidePositions() {
-            slides.forEach(slide => {
-                const step = parseInt(slide.dataset.step);
-                const position = step - currentStep;
-                
-                // Remove any existing position classes
-                slide.classList.remove('left-2', 'left-1', 'center', 'right-1', 'right-2');
-                
-                // Add position class based on relative position
-                switch(position) {
-                    case -2:
-                        slide.classList.add('left-2');
-                        break;
-                    case -1:
-                        slide.classList.add('left-1');
-                        break;
-                    case 0:
-                        slide.classList.add('center');
-                        break;
-                    case 1:
-                        slide.classList.add('right-1');
-                        break;
-                    case 2:
-                        slide.classList.add('right-2');
-                        break;
-                }
-                
-                // Apply transforms based on position
-                switch(position) {
-                    case -2: // Left most
-                        slide.style.transform = 'translateX(-250%) translateZ(-200px) rotateY(15deg)';
-                        slide.style.opacity = '0.4';
-                        slide.style.filter = 'blur(2px) brightness(0.8)';
-                        slide.style.zIndex = '1';
-                        break;
-                        
-                    case -1: // Left
-                        slide.style.transform = 'translateX(-150%) translateZ(-100px) rotateY(10deg)';
-                        slide.style.opacity = '0.6';
-                        slide.style.filter = 'blur(1px) brightness(0.9)';
-                        slide.style.zIndex = '2';
-                        break;
-                        
-                    case 0: // Center (active)
-                        slide.style.transform = 'translateX(-50%) translateZ(0px) rotateY(0deg)';
-                        slide.style.opacity = '1';
-                        slide.style.filter = 'none';
-                        slide.style.zIndex = '5';
-                        break;
-                        
-                    case 1: // Right
-                        slide.style.transform = 'translateX(50%) translateZ(-100px) rotateY(-10deg)';
-                        slide.style.opacity = '0.6';
-                        slide.style.filter = 'blur(1px) brightness(0.9)';
-                        slide.style.zIndex = '2';
-                        break;
-                        
-                    case 2: // Right most
-                        slide.style.transform = 'translateX(150%) translateZ(-200px) rotateY(-15deg)';
-                        slide.style.opacity = '0.4';
-                        slide.style.filter = 'blur(2px) brightness(0.8)';
-                        slide.style.zIndex = '1';
-                        break;
-                }
-            });
-        }
-        
-        // Add CSS for position classes (backup)
-        const style = document.createElement('style');
-        style.textContent = `
-            .carousel-slide.left-2 {
-                transform: translateX(-250%) translateZ(-200px) rotateY(15deg) !important;
-                opacity: 0.4 !important;
-                filter: blur(2px) brightness(0.8) !important;
-                z-index: 1 !important;
+            if (step === currentStep) {
+                slide.classList.add('active');
             }
-            
-            .carousel-slide.left-1 {
-                transform: translateX(-150%) translateZ(-100px) rotateY(10deg) !important;
-                opacity: 0.6 !important;
-                filter: blur(1px) brightness(0.9) !important;
-                z-index: 2 !important;
-            }
-            
-            .carousel-slide.center {
-                transform: translateX(-50%) translateZ(0px) rotateY(0deg) !important;
-                opacity: 1 !important;
-                filter: none !important;
-                z-index: 5 !important;
-            }
-            
-            .carousel-slide.right-1 {
-                transform: translateX(50%) translateZ(-100px) rotateY(-10deg) !important;
-                opacity: 0.6 !important;
-                filter: blur(1px) brightness(0.9) !important;
-                z-index: 2 !important;
-            }
-            
-            .carousel-slide.right-2 {
-                transform: translateX(150%) translateZ(-200px) rotateY(-15deg) !important;
-                opacity: 0.4 !important;
-                filter: blur(2px) brightness(0.8) !important;
-                z-index: 1 !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Initialize positions
-        updateSlidePositions();
-        
-        // Add smooth scroll behavior to carousel
-        document.querySelectorAll('a[href="#instructions"]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // If coming from download section, show step 2
-                if (this.getAttribute('href') === '#instructions' && 
-                    window.location.hash !== '#instructions') {
-                    currentStep = 2; // Show download step
-                    updateCarousel();
-                }
-                
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    window.scrollTo({
-                        top: target.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
         });
         
-        // Add intersection observer for animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
+        // Update dots
+        dots.forEach(dot => {
+            dot.classList.remove('active');
+            const step = parseInt(dot.dataset.step);
+            
+            if (step === currentStep) {
+                dot.classList.add('active');
+            }
+        });
+        
+        // Update current step indicator
+        currentStepSpan.textContent = currentStep;
+        
+        // Update button states
+        if (prevBtn && nextBtn) {
+            prevBtn.disabled = currentStep === 1;
+            nextBtn.disabled = currentStep === totalSteps;
+        }
+        
+        // Update slide positions based on current step
+        updateSlidePositions();
+    }
+    
+    function updateSlidePositions() {
+        slides.forEach(slide => {
+            const step = parseInt(slide.dataset.step);
+            const position = step - currentStep;
+            
+            // Remove any existing position classes
+            slide.classList.remove('left-2', 'left-1', 'center', 'right-1', 'right-2');
+            
+            // Add position class based on relative position
+            switch(position) {
+                case -2:
+                    slide.classList.add('left-2');
+                    break;
+                case -1:
+                    slide.classList.add('left-1');
+                    break;
+                case 0:
+                    slide.classList.add('center');
+                    break;
+                case 1:
+                    slide.classList.add('right-1');
+                    break;
+                case 2:
+                    slide.classList.add('right-2');
+                    break;
+            }
+            
+            // Apply transforms based on position
+            switch(position) {
+                case -2: // Left most
+                    slide.style.transform = 'translateX(-250%) translateZ(-200px) rotateY(15deg)';
+                    slide.style.opacity = '0.4';
+                    slide.style.filter = 'blur(2px) brightness(0.8)';
+                    slide.style.zIndex = '1';
+                    break;
                     
-                    // Start auto-rotate when in view
-                    startAutoRotate();
-                } else {
-                    // Stop auto-rotate when out of view
-                    stopAutoRotate();
-                }
-            });
-        }, { threshold: 0.3 });
+                case -1: // Left
+                    slide.style.transform = 'translateX(-150%) translateZ(-100px) rotateY(10deg)';
+                    slide.style.opacity = '0.6';
+                    slide.style.filter = 'blur(1px) brightness(0.9)';
+                    slide.style.zIndex = '2';
+                    break;
+                    
+                case 0: // Center (active)
+                    slide.style.transform = 'translateX(-50%) translateZ(0px) rotateY(0deg)';
+                    slide.style.opacity = '1';
+                    slide.style.filter = 'none';
+                    slide.style.zIndex = '5';
+                    break;
+                    
+                case 1: // Right
+                    slide.style.transform = 'translateX(50%) translateZ(-100px) rotateY(-10deg)';
+                    slide.style.opacity = '0.6';
+                    slide.style.filter = 'blur(1px) brightness(0.9)';
+                    slide.style.zIndex = '2';
+                    break;
+                    
+                case 2: // Right most
+                    slide.style.transform = 'translateX(150%) translateZ(-200px) rotateY(-15deg)';
+                    slide.style.opacity = '0.4';
+                    slide.style.filter = 'blur(2px) brightness(0.8)';
+                    slide.style.zIndex = '1';
+                    break;
+                    
+                default:
+                    // For slides that are further away
+                    slide.style.opacity = '0';
+                    slide.style.filter = 'blur(3px) brightness(0.6)';
+                    slide.style.zIndex = '0';
+                    break;
+            }
+        });
+    }
+    
+    // Add CSS for smooth transitions
+    const carouselStyle = document.createElement('style');
+    carouselStyle.textContent = `
+        .carousel-slide {
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
         
-        observer.observe(document.querySelector('.carousel-container'));
+        .carousel-slide.left-2 {
+            transform: translateX(-250%) translateZ(-200px) rotateY(15deg) !important;
+            opacity: 0.4 !important;
+            filter: blur(2px) brightness(0.8) !important;
+            z-index: 1 !important;
+        }
         
-        // Add CSS animation for entrance
-        const animationStyle = document.createElement('style');
-        animationStyle.textContent = `
-            .carousel-slide {
-                opacity: 0;
-                transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .carousel-slide.left-1 {
+            transform: translateX(-150%) translateZ(-100px) rotateY(10deg) !important;
+            opacity: 0.6 !important;
+            filter: blur(1px) brightness(0.9) !important;
+            z-index: 2 !important;
+        }
+        
+        .carousel-slide.center {
+            transform: translateX(-50%) translateZ(0px) rotateY(0deg) !important;
+            opacity: 1 !important;
+            filter: none !important;
+            z-index: 5 !important;
+        }
+        
+        .carousel-slide.right-1 {
+            transform: translateX(50%) translateZ(-100px) rotateY(-10deg) !important;
+            opacity: 0.6 !important;
+            filter: blur(1px) brightness(0.9) !important;
+            z-index: 2 !important;
+        }
+        
+        .carousel-slide.right-2 {
+            transform: translateX(150%) translateZ(-200px) rotateY(-15deg) !important;
+            opacity: 0.4 !important;
+            filter: blur(2px) brightness(0.8) !important;
+            z-index: 1 !important;
+        }
+        
+        .carousel-slide.active {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+        }
+    `;
+    document.head.appendChild(carouselStyle);
+    
+    // Initialize positions
+    updateSlidePositions();
+    
+    // Add smooth scroll behavior to carousel
+    document.querySelectorAll('a[href="#instructions"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // If coming from download section, show step 2
+            if (this.getAttribute('href') === '#instructions' && 
+                window.location.hash !== '#instructions') {
+                currentStep = 2; // Show download step
+                updateCarousel();
             }
             
-            .carousel-container.animate-in .carousel-slide {
-                opacity: 0.4;
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                window.scrollTo({
+                    top: target.offsetTop - 80,
+                    behavior: 'smooth'
+                });
             }
-            
-            .carousel-container.animate-in .carousel-slide.active {
-                opacity: 1;
-            }
-        `;
-        document.head.appendChild(animationStyle);
+        });
     });
-});
+}
