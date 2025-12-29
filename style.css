@@ -148,18 +148,261 @@ h3 {
 }
 
 /* Hero Section */
-.hero {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-    padding-top: 120px;
-    overflow: hidden;
-}
+    .hero {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        padding-top: 120px;
+        overflow: hidden;
+    }
+    
+    .hero-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+    
+    
+    /* Hero Carousel Styles */
+    .hero-carousel {
+        position: relative;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+    
+    .hero-carousel-track {
+        display: flex;
+        transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+        will-change: transform;
+    }
+    
+    .hero-carousel-slide {
+        flex: 0 0 100%;
+        padding: 0 5px;
+        opacity: 0;
+        transform: translateX(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    
+    .hero-carousel-slide.active {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    .hero-carousel .phone-mockup {
+        position: relative;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .hero-carousel .phone-mockup img {
+        width: 100%;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+    
+    .hero-carousel-slide.active .phone-mockup img {
+        transform: scale(1.02);
+    }
+    
+    .hero-carousel .phone-frame {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        border: 2px solid var(--primary);
+        border-radius: 40px;
+        pointer-events: none;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+    
+    .hero-carousel-slide.active .phone-frame {
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
+    }
+    
+    /* Hero Carousel Navigation */
+    .hero-carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--white);
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        z-index: 10;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        opacity: 0.7;
+    }
+    
+    .hero-carousel-nav:hover {
+        background: var(--primary);
+        color: var(--white);
+        opacity: 1;
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .hero-carousel-nav.prev {
+        left: 10px;
+    }
+    
+    .hero-carousel-nav.next {
+        right: 10px;
+    }
+    
+    .hero-carousel-nav:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+    
+    .hero-carousel-nav:disabled:hover {
+        background: var(--white);
+        color: var(--primary);
+        transform: translateY(-50%);
+    }
+    
+    /* Hero Carousel Dots */
+    .hero-carousel-dots {
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        z-index: 10;
+    }
+    
+    .hero-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--light-gray);
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .hero-dot:hover {
+        background: var(--primary-light);
+        transform: scale(1.2);
+    }
+    
+    .hero-dot.active {
+        background: var(--primary);
+        transform: scale(1.3);
+        box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+    }
+    
+    /* Auto-rotate animation */
+    @keyframes slideNext {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+    
+    .hero-carousel-track.auto-sliding {
+        animation: slideNext 20s linear infinite;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .hero-carousel {
+            max-width: 280px;
+        }
+        
+        .hero-carousel .phone-mockup {
+            max-width: 260px;
+        }
+        
+        .hero-carousel-nav {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .hero-carousel-nav.prev {
+            left: 5px;
+        }
+        
+        .hero-carousel-nav.next {
+            right: 5px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .hero-carousel {
+            max-width: 250px;
+        }
+        
+        .hero-carousel .phone-mockup {
+            max-width: 230px;
+        }
+        
+        .hero-carousel-nav {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Add hover effect for the entire carousel */
+    .hero-carousel:hover .hero-carousel-nav {
+        opacity: 1;
+    }
+    
+    /* Image preload optimization */
+    .hero-carousel-slide img {
+        opacity: 0;
+        animation: fadeInImage 0.5s ease forwards;
+    }
+    
+    @keyframes fadeInImage {
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* Add progress indicator for auto-slide */
+    .hero-carousel-progress {
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: var(--light-gray);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    
+    .hero-carousel-progress-bar {
+        height: 100%;
+        background: var(--primary);
+        width: 0%;
+        transition: width 4s linear;
+    }
+    
+    .hero-carousel-slide.active ~ .hero-carousel-progress .hero-carousel-progress-bar {
+        width: 100%;
+    }
 
-.hero-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-}
+
 
 .badge {
     background: var(--secondary);
