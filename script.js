@@ -313,49 +313,94 @@ function initHeroCarousel() {
 
 
 // QR Code Generator Function
+// Enhanced QR Code Generator
 function generateQRCode() {
-    const qrContainer = document.getElementById('qrcode-container');
+    const qrContainer = document.getElementById('qrcode-container') || 
+                       document.querySelector('.qr-code');
+    
     if (!qrContainer) return;
     
     const downloadUrl = 'https://github.com/uzketle-cmd/Solar-Partner-apk/releases/download/Solar_Partner/app-release.apk';
-    
-    // Create QR code using a simple API (no library needed)
     const qrSize = 200;
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(downloadUrl)}&format=png`;
     
-    // Create QR code image
-    const qrImage = document.createElement('img');
-    qrImage.src = qrCodeUrl;
-    qrImage.alt = 'Download QR Code';
+    // Check if we have a local QR code image first
+    const localQrPath = 'assets/qr-code.png';
+    
+    // Create image element
+    const qrImage = new Image();
     qrImage.width = qrSize;
     qrImage.height = qrSize;
+    qrImage.alt = 'Scan to download Solar Partner APK';
     qrImage.loading = 'lazy';
     
-    // Add loading state
-    qrImage.style.opacity = '0';
-    qrImage.style.transition = 'opacity 0.3s ease';
+    // Add loading class
+    qrContainer.classList.add('loading');
+    
+    // Try local image first
+    qrImage.src = localQrPath;
     
     qrImage.onload = function() {
-        qrImage.style.opacity = '1';
+        qrContainer.classList.remove('loading');
+        qrContainer.innerHTML = '';
+        qrContainer.appendChild(qrImage);
     };
     
     qrImage.onerror = function() {
-        // Fallback if QR code API fails
-        qrContainer.innerHTML = `
-            <div class="qr-fallback">
-                <i class="fas fa-qrcode"></i>
-                <p>QR Code Failed to Load</p>
-                <small>Download link: ${downloadUrl}</small>
-            </div>
-        `;
+        // Local image failed, use online generator
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(downloadUrl)}&format=png&color=2E7D32&bgcolor=FFFFFF`;
+        
+        const onlineQrImage = new Image();
+        onlineQrImage.src = qrCodeUrl;
+        onlineQrImage.width = qrSize;
+        onlineQrImage.height = qrSize;
+        onlineQrImage.alt = 'Scan to download Solar Partner APK';
+        
+        onlineQrImage.onload = function() {
+            qrContainer.classList.remove('loading');
+            qrContainer.innerHTML = '';
+            qrContainer.appendChild(onlineQrImage);
+        };
+        
+        onlineQrImage.onerror = function() {
+            // All methods failed, show fallback
+            qrContainer.classList.remove('loading');
+            qrContainer.innerHTML = `
+                <div class="qr-fallback">
+                    <i class="fas fa-qrcode"></i>
+                    <p>Scan with your camera</p>
+                    <div class="download-link">
+                        <i class="fas fa-link"></i>
+                        <code>${downloadUrl}</code>
+                    </div>
+                    <button class="copy-link-btn" onclick="copyDownloadLink()">
+                        <i class="far fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            `;
+        };
     };
-    
-    // Clear container and add QR code
-    qrContainer.innerHTML = '';
-    qrContainer.appendChild(qrImage);
 }
 
-
+// Function to copy download link
+function copyDownloadLink() {
+    const downloadUrl = 'https://github.com/uzketle-cmd/Solar-Partner-apk/releases/download/Solar_Partner/app-release.apk';
+    
+    navigator.clipboard.writeText(downloadUrl).then(() => {
+        const copyBtn = document.querySelector('.copy-link-btn');
+        if (copyBtn) {
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            copyBtn.style.background = 'var(--primary)';
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+                copyBtn.style.background = '';
+            }, 2000);
+        }
+    }).catch(err => {
+        console.error('Failed to copy link:', err);
+    });
+}
 
 
 
