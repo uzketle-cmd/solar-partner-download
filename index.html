@@ -253,8 +253,11 @@
                 
                    <div class="qr-section">
                         <h4>Scan to Download</h4>
-                        <div id="qrcode-container" class="qr-code">
-                            <!-- QR code will be generated here -->
+                        <div class="qr-code">
+                            <!-- Using an online QR code generator -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://github.com/uzketle-cmd/Solar-Partner-apk/releases/download/Solar_Partner/app-release.apk&format=png" 
+                                 alt="Download QR Code"
+                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'qr-fallback\'><i class=\'fas fa-qrcode\'></i><p>Scan with camera<br><small>Or use download button</small></p></div>'">
                         </div>
                         <p>Scan with your phone's camera</p>
                     </div>
