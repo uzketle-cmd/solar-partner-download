@@ -312,6 +312,53 @@ function initHeroCarousel() {
 
 
 
+// QR Code Generator Function
+function generateQRCode() {
+    const qrContainer = document.getElementById('qrcode-container');
+    if (!qrContainer) return;
+    
+    const downloadUrl = 'https://github.com/uzketle-cmd/Solar-Partner-apk/releases/download/Solar_Partner/app-release.apk';
+    
+    // Create QR code using a simple API (no library needed)
+    const qrSize = 200;
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(downloadUrl)}&format=png`;
+    
+    // Create QR code image
+    const qrImage = document.createElement('img');
+    qrImage.src = qrCodeUrl;
+    qrImage.alt = 'Download QR Code';
+    qrImage.width = qrSize;
+    qrImage.height = qrSize;
+    qrImage.loading = 'lazy';
+    
+    // Add loading state
+    qrImage.style.opacity = '0';
+    qrImage.style.transition = 'opacity 0.3s ease';
+    
+    qrImage.onload = function() {
+        qrImage.style.opacity = '1';
+    };
+    
+    qrImage.onerror = function() {
+        // Fallback if QR code API fails
+        qrContainer.innerHTML = `
+            <div class="qr-fallback">
+                <i class="fas fa-qrcode"></i>
+                <p>QR Code Failed to Load</p>
+                <small>Download link: ${downloadUrl}</small>
+            </div>
+        `;
+    };
+    
+    // Clear container and add QR code
+    qrContainer.innerHTML = '';
+    qrContainer.appendChild(qrImage);
+}
+
+
+
+
+
 
 // Initialize on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -320,6 +367,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize hero carousel
     initHeroCarousel();
+
+    // Generate QR code
+    generateQRCode();
     
     
     // Close mobile menu when clicking outside
