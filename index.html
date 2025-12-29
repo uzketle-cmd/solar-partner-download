@@ -253,12 +253,15 @@
             
             <div class="download-action">
                 <div class="qr-section">
-                    <h4>Scan to Download</h4>
-                    <div id="qrcode-container" class="qr-code">
-                        <!-- QR code will be generated here -->
-                    </div>
-                    <p>Scan with your phone's camera</p>
+                <h4>Scan to Download</h4>
+                <div class="qr-code">
+                    <!-- Using direct QR code API -->
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://github.com/uzketle-cmd/Solar-Partner-apk/releases/download/Solar_Partner/app-release.apk&format=png&color=2E7D32&bgcolor=FFFFFF" 
+                         alt="Download QR Code"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMyRTdEMzIiIHJ4PSIxMCIvPjxwYXRoIGQ9Ik01MCA1MEg0MFY0MEg1MFY1MFpNODAgNTBINzBWNDBIODBWNTBaTTUwIDgwSDQwVjcwSDUwVjgwWk04MCA4MEg3MFY3MEg4MFY4MFpNMTEwIDUwSDEwMFY0MEgxMTBWNTBaTTExMCA4MEgxMDBWNzBIMTEwVjgwWk0xNDAgNTBIMTMwVjQwSDE0MFY1MFpNMTQwIDgwSDEzMFY3MEgxNDBWODBaTTUwIDExMEg0MFYxMDBINTBWMTEwWk04MCAxMTBINzBWMTBINzA5MCIgZmlsbD0id2hpdGUiLz48L3N2Zz4=';">
                 </div>
+                <p>Scan with your phone's camera</p>
+            </div>
                 
                 <div class="download-buttons">
                     <a href="https://github.com/uzketle-cmd/Solar-Partner-apk/releases/download/Solar_Partner/app-release.apk" 
