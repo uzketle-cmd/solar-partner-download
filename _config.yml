@@ -1,0 +1,22 @@
+title: "Solar Partner - Professional Solar System Design"
+description: "Download the official Solar Partner app for designing, analyzing, and installing solar energy systems"
+baseurl: "" # leave empty if using username.github.io/repo
+url: "https://uzketle-cmd.github.io" # your GitHub Pages URL
+repository: "uzketle-cmd/Solar-Partner-apk"
+author: "Litmeon Limited"
+email: "contact@litmeon.com"
+
+# Build settings
+markdown: kramdown
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Custom variables
+app_name: "Solar Partner"
+app_version: "1.0.0"
+app_size: "76 MB"
+android_version: "Android 8.0+"
+download_url: "https://github.com/uzketle-cmd/Solar-Partner-apk/releases/download/Solar_Partner/app-release.apk"
+github_repo: "https://github.com/uzketle-cmd/Solar-Partner-apk"
